@@ -32,46 +32,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-# Most volatile cache
-      - name: ccache
-        uses: actions/cache@v3
-        with:
-          path: .ccache
-          key: ccache-docker-${{ matrix.arch.target }}-${{ github.sha }}
-          restore-keys: ccache-docker-${{ matrix.arch.target }}-
-      - name: Build Stage 1
-        id: build-stage1
-        uses: docker/build-push-action@v4
-        with:
-          file: .docker/Dockerfile
-          context: .
-          target: builder
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args:
-            TARGET=${{ matrix.arch.target }}
-          platforms: ${{ matrix.arch.platform }}
-          labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=docker,name=${{ secrets.DOCKERHUB_REPO }},push-by-digest=false,name-canonical=true,push=true
-          load: true
-# Export cache from Docker
-      - name: Export volatile cache
-        run: |
-          docker run -v ${GITHUB_WORKSPACE}/.ccache:/.ccache ${{ secrets.DOCKERHUB_REPO }}:latest cp -vr /haven-main/.ccache /
-      - name: Build Stage 2
-        id: build-stage2
-        uses: docker/build-push-action@v4
-        with:
-          file: .docker/Dockerfile
-          context: .
-          target: runner
-          #cache-from: type=gha
-          #cache-to: type=gha,mode=max
-          build-args:
-            TARGET=${{ matrix.arch.target }}
-          platforms: ${{ matrix.arch.platform }}
-          labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ secrets.DOCKERHUB_REPO }},push-by-digest=true,name-canonical=true,push=true
+
 
       - name: Export digest
         run: |
