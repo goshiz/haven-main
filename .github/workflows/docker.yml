@@ -102,8 +102,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: |
-            ${{ secrets.DOCKERHUB_REPO }}
+          images: ${{ secrets.DOCKERHUB_REPO }}
           tags: |
             # onyltag latest on release
             type=match,pattern=v\d.\d.\d,value=latest
